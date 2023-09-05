@@ -1,0 +1,4 @@
+*.d
+*.o
+matt_daemon
+*.swp
