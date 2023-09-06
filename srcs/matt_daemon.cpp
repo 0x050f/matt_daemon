@@ -13,7 +13,7 @@ int		init_daemon(void) {
 
 	/* Exit parent process gracefully */
 	if (pid > 0)
-		return (EXIT_SUCCESS);
+		exit (EXIT_SUCCESS);
 
 	/* Set new files permissions */
 	umask(0);
@@ -30,8 +30,6 @@ int		init_daemon(void) {
 	for (int fd = sysconf(_SC_OPEN_MAX); fd >= 0; fd--)
 		close(fd);
 
-	while (1) {}
-
 	return (EXIT_SUCCESS);
 }
 
@@ -41,5 +39,8 @@ int			main(int argc, char *argv[]) {
 		std::cerr << argv[0] << ": " << std::strerror(errno) << std::endl;
 		return (EXIT_FAILURE);
 	}
+	Tintin_reporter tintin(LOG_FILE);
+	tintin.log(LogLevel::Log, "Hello World!");
+	while (1) {}
 	return (EXIT_SUCCESS);
 }

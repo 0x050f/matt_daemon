@@ -11,4 +11,6 @@
 
 # include "Tintin_reporter.hpp"
 
+# define LOG_FILE "/var/log/matt_daemon/matt_daemon.log"
+
 #endif
