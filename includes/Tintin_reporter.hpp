@@ -39,7 +39,7 @@ class Tintin_reporter {
 
 			std::time_t t = std::time(0);
 			if (std::strftime(time_string, sizeof(time_string), "[%d/%m/%Y-%H:%M:%S]", std::localtime(&t)))
-				file << time_string << " [ " << l << " ] " << v <<  std::endl;
+				file << time_string << " [ " << l << " ] - Matt_daemon: " << v <<  std::endl;
 		}
 
 		template<typename Arg, typename ...Args>

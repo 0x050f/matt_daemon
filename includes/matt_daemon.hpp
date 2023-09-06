@@ -10,7 +10,9 @@
 # include <sys/stat.h>
 
 # include "Tintin_reporter.hpp"
+# include "Server.hpp"
 
-# define LOG_FILE "/var/log/matt_daemon/matt_daemon.log"
+# define LOG_FILE "/mnt/nfs/homes/lmartin/Documents/matt_daemon/log/matt_daemon/matt_daemon.log"
+# define SERVER_PORT 4242
 
 #endif

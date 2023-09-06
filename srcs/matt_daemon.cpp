@@ -26,21 +26,27 @@ int		init_daemon(void) {
 	/* Change the working directory to the root directory */
 	chdir("/");
 
-	/* Close all open file descriptors */
-	for (int fd = sysconf(_SC_OPEN_MAX); fd >= 0; fd--)
-		close(fd);
+	/* Close file descriptors */
+	close(STDIN_FILENO);
+	close(STDOUT_FILENO);
+	close(STDERR_FILENO);
 
 	return (EXIT_SUCCESS);
 }
 
 int			main(int argc, char *argv[]) {
 	(void)argc;
+	Tintin_reporter tintin(LOG_FILE);
+	tintin.log(LogLevel::Info, "Started.");
+	tintin.log(LogLevel::Info, "Creating server.");
+	Server server(SERVER_PORT);
+	tintin.log(LogLevel::Info, "Server created.");
+	tintin.log(LogLevel::Info, "Entering Daemon mode.");
 	if (init_daemon()) {
 		std::cerr << argv[0] << ": " << std::strerror(errno) << std::endl;
 		return (EXIT_FAILURE);
 	}
-	Tintin_reporter tintin(LOG_FILE);
-	tintin.log(LogLevel::Log, "Hello World!");
+	tintin.log(LogLevel::Info, "started. PID: ", getpid());
 	while (1) {}
 	return (EXIT_SUCCESS);
 }

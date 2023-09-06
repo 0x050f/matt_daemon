@@ -6,10 +6,12 @@ DIR_SRCS	=	./srcs/
 DIR_OBJS	=	./compiled_srcs/
 
 SRCS		=	matt_daemon.cpp \
-				Tintin_reporter.cpp
+				Tintin_reporter.cpp \
+				Server.cpp
 
 INCLUDES	=	matt_daemon.hpp \
-				Tintin_reporter.hpp
+				Tintin_reporter.hpp \
+				Server.hpp
 
 OBJS		=	$(SRCS:%.cpp=$(DIR_OBJS)%.o)
 DEPS		=	$(SRCS:%.cpp=$(DIR_OBJS)%.d)
