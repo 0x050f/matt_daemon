@@ -14,11 +14,16 @@ class Server {
 		fd_set				fd_master;
 		std::vector<int>	clients;
 
+		void	new_client();
+		void	remove_client(int fd);
+		void	recvfrom_client(int fd);
+
 	public:
 		Server(uint16_t port);
 		~Server(void);
 		Server(Server const &);
 		Server& operator=(Server const &);
+		void	run(void);
 };
 
 #endif

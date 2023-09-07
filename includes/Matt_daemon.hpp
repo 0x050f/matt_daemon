@@ -2,6 +2,7 @@
 # define MATT_DAEMON_HPP
 
 # include <ctime>
+# include <csignal>
 # include <cstring>
 # include <iostream>
 
@@ -14,10 +15,11 @@
 # include "Lock.hpp"
 # include "Server.hpp"
 
-# define LOG_FILE "/mnt/nfs/homes/lmartin/Documents/matt_daemon/log/matt_daemon/matt_daemon.log"
+# define LOG_FILE "/var/log/matt_daemon/matt_daemon.log"
 # define LOCK_FILE "/var/lock/matt_daemon.lock"
-# define SERVER_PORT 14242
+# define SERVER_PORT 4242
 
 int		ft_mkdir(const char *dir);
+void	quit(int code);
 
 #endif

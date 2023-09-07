@@ -5,12 +5,12 @@ DIR_HEADERS	=	./includes/
 DIR_SRCS	=	./srcs/
 DIR_OBJS	=	./compiled_srcs/
 
-SRCS		=	matt_daemon.cpp \
+SRCS		=	Matt_daemon.cpp \
 				Tintin_reporter.cpp \
 				Lock.cpp \
 				Server.cpp
 
-INCLUDES	=	matt_daemon.hpp \
+INCLUDES	=	Matt_daemon.hpp \
 				Tintin_reporter.hpp \
 				Lock.hpp \
 				Server.hpp
@@ -18,12 +18,12 @@ INCLUDES	=	matt_daemon.hpp \
 OBJS		=	$(SRCS:%.cpp=$(DIR_OBJS)%.o)
 DEPS		=	$(SRCS:%.cpp=$(DIR_OBJS)%.d)
 
-NAME		=	matt_daemon
+NAME		=	Matt_daemon
 
 ifeq ($(BUILD),debug)
 	CC_FLAGS		+=	-DDEBUG -g3 -fsanitize=address
 	DIR_OBJS		=	./debug-compiled_srcs/
-	NAME			=	debug-matt_daemon
+	NAME			=	debug-Matt_daemon
 endif
 
 all:		$(NAME)

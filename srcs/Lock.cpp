@@ -1,4 +1,4 @@
-#include "matt_daemon.hpp"
+#include "Matt_daemon.hpp"
 
 Lock::Lock(std::string const &str) {
 	this->str = str;
@@ -7,10 +7,10 @@ Lock::Lock(std::string const &str) {
 	if (ft_mkdir(path))
 		throw std::runtime_error(std::strerror(errno));
 	this->fd = open(str.c_str(), O_CREAT, 0644);
-	if (this->fd < 0)
-		throw std::runtime_error(std::strerror(errno));
-	if (flock(this->fd, LOCK_EX | LOCK_NB) < 0)
+	if (this->fd < 0 || flock(this->fd, LOCK_EX | LOCK_NB) < 0) {
+		std::cerr << "Can't open: " << str << std::endl;
 		throw std::runtime_error("Error file locked.");
+	}
 }
 
 Lock::~Lock(void) {

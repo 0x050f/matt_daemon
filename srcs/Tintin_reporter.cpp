@@ -1,4 +1,4 @@
-# include "matt_daemon.hpp"
+# include "Matt_daemon.hpp"
 
 Tintin_reporter::Tintin_reporter(std::string const &str) {
 	std::string binding = str.substr(0, str.find_last_of("/")).c_str();
@@ -13,6 +13,5 @@ Tintin_reporter::Tintin_reporter(std::string const &str) {
 }
 
 Tintin_reporter::~Tintin_reporter(void) {
-	log(LogLevel::Info, "Quitting.");
 	file.close();
 }

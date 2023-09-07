@@ -1,4 +1,4 @@
-#include "matt_daemon.hpp"
+#include "Matt_daemon.hpp"
 
 int		init_daemon(void) {
 	pid_t	pid;
@@ -53,29 +53,45 @@ int		ft_mkdir(const char *dir) {
 	return (0);
 }
 
+Tintin_reporter		*tintin = NULL;
+Lock				*lock = NULL;
+Server				*server = NULL;
+
+void		quit(int code) {
+	tintin->log(LogLevel::Info, "Quitting.");
+	delete(server);
+	delete(lock);
+	delete(tintin);
+	exit(code);
+}
+
+void		signal_handler(int signum) {
+	(void)signum;
+	tintin->log(LogLevel::Info, "Signal handler.");
+	quit(signum);
+}
+
 int			main(void) {
 	char	buff[100];
 
-	Tintin_reporter tintin(LOG_FILE);
 	try {
-		Lock lock(LOCK_FILE);
-		tintin.log(LogLevel::Info, "Creating server.");
-		Server server(SERVER_PORT);
-		tintin.log(LogLevel::Info, "Server created.");
-		tintin.log(LogLevel::Info, "Entering Daemon mode.");
-		if (init_daemon()) {
-			tintin.log(LogLevel::Error, std::strerror(errno));
-			return (EXIT_FAILURE);
-		}
-		if (std::snprintf(buff, 100, "started. PID: %d", getpid()) < 0) {
-			tintin.log(LogLevel::Error, std::strerror(errno));
-			return (EXIT_FAILURE);
-		}
-		tintin.log(LogLevel::Info, buff);
-		while (1) {}
+		tintin = new Tintin_reporter(LOG_FILE);
+		lock = new Lock(LOCK_FILE);
+		tintin->log(LogLevel::Info, "Creating server.");
+		server = new Server(SERVER_PORT);
+		tintin->log(LogLevel::Info, "Server created.");
+		tintin->log(LogLevel::Info, "Entering Daemon mode.");
+		if (init_daemon())
+			throw std::runtime_error(std::strerror(errno));
+		if (std::snprintf(buff, 100, "started. PID: %d", getpid()) < 0)
+			throw std::runtime_error(std::strerror(errno));
+		tintin->log(LogLevel::Info, buff);
+		for (size_t i = 0; i < _NSIG; i++)
+			signal(i, signal_handler);
+		server->run();
 	} catch (const std::exception &e) {
-		tintin.log(LogLevel::Error, e.what());
-		return (EXIT_FAILURE);
+		tintin->log(LogLevel::Error, e.what());
+		quit(EXIT_FAILURE);
 	}
 	return (EXIT_SUCCESS);
 }
