@@ -5,6 +5,7 @@
 # include <vector>
 
 # define MAX_CLIENTS 3
+# define BUFFER_SIZE 4096
 
 class Server {
 	private:

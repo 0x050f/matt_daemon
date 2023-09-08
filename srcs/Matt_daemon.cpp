@@ -1,5 +1,10 @@
 #include "Matt_daemon.hpp"
 
+# define EXIT_PARENT 2
+
+Tintin_reporter		*tintin = NULL;
+bool				quit = false;
+
 int		init_daemon(void) {
 	pid_t	pid;
 
@@ -11,8 +16,9 @@ int		init_daemon(void) {
 		return (EXIT_FAILURE);
 
 	/* Exit parent process gracefully */
-	if (pid > 0)
-		exit (EXIT_SUCCESS);
+	if (pid > 0) {
+		return (EXIT_PARENT);
+	}
 
 	/* Set new files permissions */
 	umask(0);
@@ -53,45 +59,43 @@ int		ft_mkdir(const char *dir) {
 	return (0);
 }
 
-Tintin_reporter		*tintin = NULL;
-Lock				*lock = NULL;
-Server				*server = NULL;
-
-void		quit(int code) {
-	tintin->log(LogLevel::Info, "Quitting.");
-	delete(server);
-	delete(lock);
-	delete(tintin);
-	exit(code);
-}
-
 void		signal_handler(int signum) {
 	(void)signum;
 	tintin->log(LogLevel::Info, "Signal handler.");
-	quit(signum);
+	quit = true;
 }
 
 int			main(void) {
+	int		ret;
 	char	buff[100];
 
+	ret = EXIT_SUCCESS;
 	try {
 		tintin = new Tintin_reporter(LOG_FILE);
-		lock = new Lock(LOCK_FILE);
+		Lock lock(LOCK_FILE);
 		tintin->log(LogLevel::Info, "Creating server.");
-		server = new Server(SERVER_PORT);
+		Server server(SERVER_PORT);
 		tintin->log(LogLevel::Info, "Server created.");
 		tintin->log(LogLevel::Info, "Entering Daemon mode.");
-		if (init_daemon())
+		ret = init_daemon();
+		if (ret == EXIT_FAILURE)
 			throw std::runtime_error(std::strerror(errno));
+		else if (ret == EXIT_PARENT) {
+			delete(tintin);
+			return (EXIT_SUCCESS);
+		}
 		if (std::snprintf(buff, 100, "started. PID: %d", getpid()) < 0)
 			throw std::runtime_error(std::strerror(errno));
 		tintin->log(LogLevel::Info, buff);
 		for (size_t i = 0; i < _NSIG; i++)
 			signal(i, signal_handler);
-		server->run();
+		server.run();
+		lock.remove();
 	} catch (const std::exception &e) {
 		tintin->log(LogLevel::Error, e.what());
-		quit(EXIT_FAILURE);
+		ret = EXIT_FAILURE;
 	}
-	return (EXIT_SUCCESS);
+	tintin->log(LogLevel::Info, "Quitting.");
+	delete(tintin);
+	return (ret);
 }

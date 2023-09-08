@@ -1,9 +1,5 @@
 #include "Matt_daemon.hpp"
 
-extern Tintin_reporter		*tintin;
-
-# define BUFFER_SIZE 4096
-
 Server::Server(uint16_t port) {
 	struct sockaddr_in		addr;
 
@@ -102,7 +98,7 @@ void	Server::recvfrom_client(int fd) {
 
 			if (!std::strcmp(msg, "quit")) {
 				tintin->log(LogLevel::Info, "Request quit.");
-				quit(0);
+				quit = true;
 			}
 			if (std::snprintf(format, BUFFER_SIZE + 32, "User input: %s", msg) < 0)
 				return ;
@@ -117,9 +113,13 @@ void	Server::recvfrom_client(int fd) {
 }
 
 void		Server::run(void) {
-	while (true) {
+	struct timeval tv;
+
+	tv.tv_sec = 1;
+	tv.tv_usec = 0;
+	while (!quit) {
 		this->fd_read = this->fd_master;
-		select(this->fd_max + 1, &this->fd_read, NULL, NULL, NULL);
+		select(this->fd_max + 1, &this->fd_read, NULL, NULL, &tv);
 		int fd = 0;
 		while (fd < this->fd_max + 1) {
 			if (FD_ISSET(fd, &this->fd_read)) {

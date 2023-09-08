@@ -19,7 +19,9 @@
 # define LOCK_FILE "/var/lock/matt_daemon.lock"
 # define SERVER_PORT 4242
 
+extern Tintin_reporter		*tintin;
+extern bool					quit;
+
 int		ft_mkdir(const char *dir);
-void	quit(int code);
 
 #endif

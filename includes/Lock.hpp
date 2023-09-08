@@ -13,6 +13,8 @@ class Lock {
 		~Lock(void);
 		Lock(Lock const &);
 		Lock& operator=(Lock const &);
+
+		void		remove(void);
 };
 
 #endif
