@@ -4,6 +4,7 @@
 # include <ctime>
 # include <csignal>
 # include <cstring>
+# include <mutex>
 # include <iostream>
 
 # include <fcntl.h>
@@ -21,6 +22,7 @@
 
 extern Tintin_reporter		*tintin;
 extern bool					quit;
+extern std::mutex			check_quit;
 
 int		ft_mkdir(const char *dir);
 

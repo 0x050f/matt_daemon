@@ -98,7 +98,9 @@ void	Server::recvfrom_client(int fd) {
 
 			if (!std::strcmp(msg, "quit")) {
 				tintin->log(LogLevel::Info, "Request quit.");
+				check_quit.lock();
 				quit = true;
+				check_quit.unlock();
 			}
 			if (std::snprintf(format, BUFFER_SIZE + 32, "User input: %s", msg) < 0)
 				return ;
@@ -115,13 +117,14 @@ void	Server::recvfrom_client(int fd) {
 void		Server::run(void) {
 	struct timeval tv;
 
-	tv.tv_sec = 1;
-	tv.tv_usec = 0;
+	check_quit.lock();
 	while (!quit) {
+		check_quit.unlock();
 		this->fd_read = this->fd_master;
+		tv.tv_sec = 1;
+		tv.tv_usec = 0;
 		select(this->fd_max + 1, &this->fd_read, NULL, NULL, &tv);
-		int fd = 0;
-		while (fd < this->fd_max + 1) {
+		for (int fd = 0; fd < this->fd_max + 1 && !quit; fd++) {
 			if (FD_ISSET(fd, &this->fd_read)) {
 				if (fd == this->sockfd) {
 					new_client();
@@ -131,7 +134,8 @@ void		Server::run(void) {
 					break ;
 				}
 			}
-			fd++;
 		}
+		check_quit.lock();
 	}
+	check_quit.unlock();
 }

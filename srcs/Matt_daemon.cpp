@@ -4,6 +4,7 @@
 
 Tintin_reporter		*tintin = NULL;
 bool				quit = false;
+std::mutex			check_quit;
 
 int		init_daemon(void) {
 	pid_t	pid;
@@ -62,7 +63,9 @@ int		ft_mkdir(const char *dir) {
 void		signal_handler(int signum) {
 	(void)signum;
 	tintin->log(LogLevel::Info, "Signal handler.");
+	check_quit.lock();
 	quit = true;
+	check_quit.unlock();
 }
 
 int			main(void) {
