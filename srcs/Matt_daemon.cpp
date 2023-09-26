@@ -40,21 +40,21 @@ int		init_daemon(void) {
 }
 
 int		ft_mkdir(const char *dir) {
-	char	tmp[PATH_MAX];
+	char	tmp[PATH_MAX] = {'\0'};
 	char	*p = NULL;
 	size_t	len;
 
 	snprintf(tmp, sizeof(tmp),"%s",dir);
 	len = strlen(tmp);
-	if (tmp[len - 1] == '/')
-		tmp[len - 1] = 0;
-	for (p = tmp + 1; *p; p++)
+	tmp[len] = '\0';
+	for (p = tmp + 1; *p; p++) {
 		if (*p == '/') {
-			*p = 0;
+			*p = '\0';
 			if (mkdir(tmp, S_IRWXU) && errno != EEXIST)
 				return (-1);
 			*p = '/';
 		}
+	}
 	if (mkdir(tmp, S_IRWXU) && errno != EEXIST)
 		return (-1);
 	return (0);
@@ -75,6 +75,11 @@ int			main(void) {
 	ret = EXIT_SUCCESS;
 	try {
 		tintin = new Tintin_reporter(LOG_FILE);
+	} catch (const std::exception &e) {
+		std::cerr << LOG_FILE << ": " << e.what() << std::endl;
+		return (EXIT_FAILURE);
+	}
+	try {
 		Lock lock(LOCK_FILE);
 		tintin->log(LogLevel::Info, "Creating server.");
 		Server server(SERVER_PORT);
