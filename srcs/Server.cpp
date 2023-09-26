@@ -101,6 +101,7 @@ void	Server::recvfrom_client(int fd) {
 				check_quit.lock();
 				quit = true;
 				check_quit.unlock();
+				return ;
 			}
 			if (std::snprintf(format, BUFFER_SIZE + 32, "User input: %s", msg) < 0)
 				return ;
